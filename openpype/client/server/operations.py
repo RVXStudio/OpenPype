@@ -312,7 +312,7 @@ def _prepare_update_data(old_doc, new_doc, replace):
 
     if replace:
         for key in old_doc.keys():
-            if key not in new_doc:
+            if key not in new_doc and key != 'version_id':
                 changes[key] = REMOVED_VALUE
     return changes
 
@@ -771,7 +771,6 @@ class OperationsSession(BaseOperationsSession):
         Returns:
             ServerUpdateOperation: Object of update operation.
         """
-
         operation = ServerUpdateOperation(
             project_name, entity_type, entity_id, update_data, self
         )

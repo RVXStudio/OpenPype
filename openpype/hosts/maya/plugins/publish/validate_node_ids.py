@@ -13,7 +13,7 @@ class ValidateNodeIDs(pyblish.api.InstancePlugin):
     in Maya upon scene save.
 
     """
-
+    optional=True
     order = ValidatePipelineOrder
     label = 'Instance Nodes Have ID'
     hosts = ['maya']

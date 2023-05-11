@@ -405,7 +405,7 @@ class IntegrateHeroVersion(pyblish.api.InstancePlugin):
                     for file_info in old_repre.get("files", []):
                         old_site_names |= {
                             site["name"]
-                            for site in file_info["sites"]
+                            for site in file_info.get("sites", [{'name':'studio'}])
                         }
 
                     for file_info in update_data.get("files", []):
