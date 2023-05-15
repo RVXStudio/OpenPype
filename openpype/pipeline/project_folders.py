@@ -33,7 +33,7 @@ def concatenate_splitted_paths(split_paths, anatomy):
                         computer!".format(root, root_path))
                     continue
                 clean_items = ["{{root[{}]}}".format(root),
-                               r"{project[name]}"] + clean_items[1:]
+                               r"{project[code]}"] + clean_items[1:]
                 output.append(os.path.normpath(os.path.sep.join(clean_items)))
             continue
 
