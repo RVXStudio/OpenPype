@@ -83,12 +83,12 @@ _python_paths = _pythonpath.split(os.pathsep)
 if not IS_BUILT_APPLICATION:
     # Code root defined by `start.py` directory
     AYON_ROOT = os.path.dirname(os.path.abspath(__file__))
-    _dependencies_path = site.getsitepackages()[-1]
+    _dependencies_paths = site.getsitepackages()
 else:
     AYON_ROOT = os.path.dirname(sys.executable)
 
     # add dependencies folder to sys.pat for frozen code
-    _dependencies_path = os.path.normpath(
+    _dependencies_paths = [os.path.normpath(
         os.path.join(AYON_ROOT, "dependencies")
     )
 # add stuff from `<frozen>/dependencies` to PYTHONPATH.
