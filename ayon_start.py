@@ -90,10 +90,10 @@ else:
     # add dependencies folder to sys.pat for frozen code
     _dependencies_paths = [os.path.normpath(
         os.path.join(AYON_ROOT, "dependencies")
-    )
+    )]
 # add stuff from `<frozen>/dependencies` to PYTHONPATH.
-sys.path.append(_dependencies_path)
-_python_paths.append(_dependencies_path)
+sys.path.extend(_dependencies_paths)
+_python_paths.extend(_dependencies_paths)
 
 # Vendored python modules that must not be in PYTHONPATH environment but
 #   are required for OpenPype processes
