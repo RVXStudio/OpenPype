@@ -57,9 +57,6 @@ class AfterEffectsHost(HostBase, IWorkfileHost, ILoadHost, IPublishHost):
             print("Not connected yet, ignoring")
             return
 
-        if not stub.get_active_document_name():
-            return
-
         self._stub = stub
         return self._stub
 

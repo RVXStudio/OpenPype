@@ -89,10 +89,11 @@ class CollectAERender(publish.AbstractCollectRender):
                 raise ValueError("No file extension set in Render Queue")
             render_item = render_q[0]
 
+            instance_families = inst.data.get("families", [])
             subset_name = inst.data["subset"]
             instance = AERenderInstance(
                 family="render",
-                families=inst.data.get("families", []),
+                families=instance_families,
                 version=version,
                 time="",
                 source=current_file,
@@ -110,6 +111,7 @@ class CollectAERender(publish.AbstractCollectRender):
                 tileRendering=False,
                 tilesX=0,
                 tilesY=0,
+                review="review" in instance_families,
                 frameStart=frame_start,
                 frameEnd=frame_end,
                 frameStep=1,
@@ -142,6 +144,9 @@ class CollectAERender(publish.AbstractCollectRender):
                 instance.toBeRenderedOn = "deadline"
                 instance.renderer = "aerender"
                 instance.farm = True  # to skip integrate
+                if "review" in instance.families:
+                    # to skip ExtractReview locally
+                    instance.families.remove("review")
 
             instances.append(instance)
             instances_to_remove.append(inst)
@@ -221,6 +226,7 @@ class CollectAERender(publish.AbstractCollectRender):
         if fam not in instance.families:
             instance.families.append(fam)
 
+<<<<<<< HEAD
         reviewable_subset_filter = (project_settings["deadline"]
                                     ["publish"]
                                     ["ProcessSubmittedJobOnFarm"]
@@ -231,4 +237,6 @@ class CollectAERender(publish.AbstractCollectRender):
                 instance.review = True
                 break
 
+=======
+>>>>>>> 5125b21b66b8cbceed4f227abe17b6d1088f5ec0
         return instance

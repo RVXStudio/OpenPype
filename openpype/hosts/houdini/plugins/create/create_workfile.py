@@ -13,7 +13,7 @@ class CreateWorkfile(plugin.HoudiniCreatorBase, AutoCreator):
     identifier = "io.openpype.creators.houdini.workfile"
     label = "Workfile"
     family = "workfile"
-    icon = "document"
+    icon = "fa5.file"
 
     default_variant = "Main"
 

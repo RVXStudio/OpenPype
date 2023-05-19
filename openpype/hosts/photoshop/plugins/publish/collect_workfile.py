@@ -14,9 +14,9 @@ class CollectWorkfile(pyblish.api.ContextPlugin):
     default_variant = "Main"
 
     def process(self, context):
-        existing_instance = None
         for instance in context:
             if instance.data["family"] == "workfile":
+<<<<<<< HEAD
                 self.log.debug("Workfile instance found, won't create new")
                 existing_instance = instance
                 break
@@ -61,3 +61,19 @@ class CollectWorkfile(pyblish.api.ContextPlugin):
             "files": base_name,
             "stagingDir": staging_dir,
         })
+=======
+                file_path = context.data["currentFile"]
+                _, ext = os.path.splitext(file_path)
+                staging_dir = os.path.dirname(file_path)
+                base_name = os.path.basename(file_path)
+
+                # creating representation
+                _, ext = os.path.splitext(file_path)
+                instance.data["representations"].append({
+                    "name": ext[1:],
+                    "ext": ext[1:],
+                    "files": base_name,
+                    "stagingDir": staging_dir,
+                })
+                return
+>>>>>>> 5125b21b66b8cbceed4f227abe17b6d1088f5ec0

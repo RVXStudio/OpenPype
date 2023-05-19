@@ -83,17 +83,17 @@ _python_paths = _pythonpath.split(os.pathsep)
 if not IS_BUILT_APPLICATION:
     # Code root defined by `start.py` directory
     AYON_ROOT = os.path.dirname(os.path.abspath(__file__))
-    _dependencies_paths = site.getsitepackages()
+    _dependencies_path = site.getsitepackages()[-1]
 else:
     AYON_ROOT = os.path.dirname(sys.executable)
 
     # add dependencies folder to sys.pat for frozen code
-    _dependencies_paths = [os.path.normpath(
+    _dependencies_path = os.path.normpath(
         os.path.join(AYON_ROOT, "dependencies")
-    )]
+    )
 # add stuff from `<frozen>/dependencies` to PYTHONPATH.
-sys.path.extend(_dependencies_paths)
-_python_paths.extend(_dependencies_paths)
+sys.path.append(_dependencies_path)
+_python_paths.append(_dependencies_path)
 
 # Vendored python modules that must not be in PYTHONPATH environment but
 #   are required for OpenPype processes

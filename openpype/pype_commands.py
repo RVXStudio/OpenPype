@@ -265,12 +265,6 @@ class PypeCommands:
 
         main(output_path, project_name, asset_name, strict)
 
-    def texture_copy(self, project, asset, path):
-        pass
-
-    def run_application(self, app, project, asset, task, tools, arguments):
-        pass
-
     def validate_jsons(self):
         pass
 
@@ -358,12 +352,12 @@ class PypeCommands:
         version_packer = VersionRepacker(directory)
         version_packer.process()
 
-    def pack_project(self, project_name, dirpath):
+    def pack_project(self, project_name, dirpath, database_only):
         from openpype.lib.project_backpack import pack_project
 
-        pack_project(project_name, dirpath)
+        pack_project(project_name, dirpath, database_only)
 
-    def unpack_project(self, zip_filepath, new_root):
+    def unpack_project(self, zip_filepath, new_root, database_only):
         from openpype.lib.project_backpack import unpack_project
 
-        unpack_project(zip_filepath, new_root)
+        unpack_project(zip_filepath, new_root, database_only)

@@ -19,7 +19,11 @@ from openpype.pipeline import (
     loaders_from_representation,
     load_container,
     get_representation_path,
+<<<<<<< HEAD
     AVALON_CONTAINER_ID,
+=======
+    AYON_CONTAINER_ID,
+>>>>>>> 5125b21b66b8cbceed4f227abe17b6d1088f5ec0
     get_current_project_name,
 )
 from openpype.pipeline.context_tools import get_current_project_asset
@@ -37,7 +41,7 @@ class LayoutLoader(plugin.Loader):
     label = "Load Layout"
     icon = "code-fork"
     color = "orange"
-    ASSET_ROOT = "/Game/OpenPype"
+    ASSET_ROOT = "/Game/Ayon"
 
     def _get_asset_containers(self, path):
         ar = unreal.AssetRegistryHelpers.get_asset_registry()
@@ -50,7 +54,7 @@ class LayoutLoader(plugin.Loader):
         # Get all the asset containers
         for a in asset_content:
             obj = ar.get_asset_by_object_path(a)
-            if obj.get_asset().get_class().get_name() == 'AssetContainer':
+            if obj.get_asset().get_class().get_name() == 'AyonAssetContainer':
                 asset_containers.append(obj)
 
         return asset_containers
@@ -338,7 +342,7 @@ class LayoutLoader(plugin.Loader):
                             ).replace('\\', '/')
 
                             _filter = unreal.ARFilter(
-                                class_names=["AssetContainer"],
+                                class_names=["AyonAssetContainer"],
                                 package_paths=[anim_path],
                                 recursive_paths=False)
                             containers = ar.get_assets(_filter)
@@ -519,7 +523,7 @@ class LayoutLoader(plugin.Loader):
 
                 for asset in assets:
                     obj = ar.get_asset_by_object_path(asset).get_asset()
-                    if obj.get_class().get_name() == 'AssetContainer':
+                    if obj.get_class().get_name() == 'AyonAssetContainer':
                         container = obj
                     if obj.get_class().get_name() == 'Skeleton':
                         skeleton = obj
@@ -634,7 +638,7 @@ class LayoutLoader(plugin.Loader):
         data = get_current_project_settings()
         create_sequences = data["unreal"]["level_sequences_for_layouts"]
 
-        # Create directory for asset and avalon container
+        # Create directory for asset and Ayon container
         hierarchy = context.get('asset').get('data').get('parents')
         root = self.ASSET_ROOT
         hierarchy_dir = root
@@ -750,8 +754,8 @@ class LayoutLoader(plugin.Loader):
             container=container_name, path=asset_dir)
 
         data = {
-            "schema": "openpype:container-2.0",
-            "id": AVALON_CONTAINER_ID,
+            "schema": "ayon:container-2.0",
+            "id": AYON_CONTAINER_ID,
             "asset": asset,
             "namespace": asset_dir,
             "container_name": container_name,
@@ -782,7 +786,7 @@ class LayoutLoader(plugin.Loader):
 
         ar = unreal.AssetRegistryHelpers.get_asset_registry()
 
-        root = "/Game/OpenPype"
+        root = "/Game/Ayon"
 
         asset_dir = container.get('namespace')
         context = representation.get("context")
@@ -820,7 +824,7 @@ class LayoutLoader(plugin.Loader):
             recursive_paths=False)
         levels = ar.get_assets(filter)
 
-        layout_level = levels[0].get_editor_property('object_path')
+        layout_level = levels[0].get_full_name()
 
         EditorLevelLibrary.save_all_dirty_levels()
         EditorLevelLibrary.load_level(layout_level)
@@ -868,7 +872,7 @@ class LayoutLoader(plugin.Loader):
         data = get_current_project_settings()
         create_sequences = data["unreal"]["level_sequences_for_layouts"]
 
-        root = "/Game/OpenPype"
+        root = "/Game/Ayon"
         path = Path(container.get("namespace"))
 
         containers = unreal_pipeline.ls()
@@ -920,7 +924,7 @@ class LayoutLoader(plugin.Loader):
                 package_paths=[f"{root}/{ms_asset}"],
                 recursive_paths=False)
             levels = ar.get_assets(_filter)
-            master_level = levels[0].get_editor_property('object_path')
+            master_level = levels[0].get_full_name()
 
             sequences = [master_sequence]
 

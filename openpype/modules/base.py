@@ -427,6 +427,7 @@ def _load_modules():
     # Look for OpenPype modules in paths defined with `get_module_dirs`
     #   - dynamically imported OpenPype modules and addons
     module_dirs = get_module_dirs()
+
     # Add current directory at first place
     #   - has small differences in import logic
     current_dir = os.path.abspath(os.path.dirname(__file__))
@@ -434,8 +435,11 @@ def _load_modules():
     module_dirs.insert(0, hosts_dir)
     module_dirs.insert(0, current_dir)
 
+    addons_dir = os.path.join(os.path.dirname(current_dir), "addons")
+    module_dirs.append(addons_dir)
+
     processed_paths = set()
-    for dirpath in module_dirs:
+    for dirpath in frozenset(module_dirs):
         # Skip already processed paths
         if dirpath in processed_paths:
             continue
