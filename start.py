@@ -868,7 +868,7 @@ def _bootstrap_from_code(use_version):
     # this is slightly convoluted as we can get here from frozen code too
     # in case when we are running without any version installed.
     if not getattr(sys, 'frozen', False):
-        split_paths.append(site.getsitepackages()[-1])
+        split_paths.extend(site.getsitepackages())
         # TODO move additional paths to `boot` part when OPENPYPE_ROOT will
         # point to same hierarchy from code and from frozen OpenPype
         additional_paths = [
