@@ -138,45 +138,6 @@ class CreateSaver(NewCreator):
         original_subset = tool.GetData("openpype.subset")
         subset = data["subset"]
         if original_subset != subset:
-<<<<<<< HEAD
-            # Subset change detected
-            # Update output filepath
-            workdir = os.path.normpath(legacy_io.Session["AVALON_WORKDIR"])
-            filename = f"{subset}..exr"
-            filepath = os.path.join(workdir, "render", subset, filename)
-            tool["Clip"] = filepath
-
-            # Rename tool
-            if tool.Name != subset:
-                print(f"Renaming {tool.Name} -> {subset}")
-                tool.SetAttrs({"TOOLS_Name": subset})
-
-    def _collect_unmanaged_saver(self, tool):
-        # TODO: this should not be done this way - this should actually
-        #       get the data as stored on the tool explicitly (however)
-        #       that would disallow any 'regular saver' to be collected
-        #       unless the instance data is stored on it to begin with
-
-        print("Collecting unmanaged saver..")
-        comp = tool.Comp()
-
-        # Allow regular non-managed savers to also be picked up
-        project = self.create_context.get_current_project_name()
-        asset = self.create_context.get_current_asset_name()
-        task = self.create_context.get_current_task_name()
-
-        asset_doc = get_asset_by_name(project_name=project, asset_name=asset)
-
-        path = tool["Clip"][comp.TIME_UNDEFINED]
-        fname = os.path.basename(path)
-        fname, _ext = os.path.splitext(fname)
-        variant = fname.rstrip(".")
-        subset = self.get_subset_name(
-            variant=variant,
-            task_name=task,
-            asset_doc=asset_doc,
-            project_name=project,
-=======
             self._configure_saver_tool(data, tool, subset)
 
     def _configure_saver_tool(self, data, tool, subset):
@@ -186,7 +147,6 @@ class CreateSaver(NewCreator):
         anatomy = Anatomy()
         frame_padding = int(
             anatomy.templates["render"].get("frame_padding", 4)
->>>>>>> 5125b21b66b8cbceed4f227abe17b6d1088f5ec0
         )
 
         # Subset change detected

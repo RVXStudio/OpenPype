@@ -90,11 +90,11 @@ done
 ###############################################################################
 detect_python () {
   echo -e "${BIGreen}>>>${RST} Using python \c"
-  command -v python3 >/dev/null 2>&1 || { echo -e "${BIRed}- NOT FOUND${RST} ${BIYellow}You need Python 3.9 installed to continue.${RST}"; return 1; }
+  command -v python >/dev/null 2>&1 || { echo -e "${BIRed}- NOT FOUND${RST} ${BIYellow}You need Python 3.9 installed to continue.${RST}"; return 1; }
   local version_command
   version_command="import sys;print('{0}.{1}'.format(sys.version_info[0], sys.version_info[1]))"
   local python_version
-  python_version="$(python3 <<< ${version_command})"
+  python_version="$(python <<< ${version_command})"
   oIFS="$IFS"
   IFS=.
   set -- $python_version
@@ -106,7 +106,7 @@ detect_python () {
       echo -e "${BIWhite}[${RST} ${BIGreen}$1.$2${RST} ${BIWhite}]${RST}"
     fi
   else
-    command -v python3 >/dev/null 2>&1 || { echo -e "${BIRed}$1.$2$ - ${BIRed}FAILED${RST} ${BIYellow}Version is old and unsupported${RST}"; return 1; }
+    command -v python >/dev/null 2>&1 || { echo -e "${BIRed}$1.$2$ - ${BIRed}FAILED${RST} ${BIYellow}Version is old and unsupported${RST}"; return 1; }
   fi
 }
 
@@ -153,7 +153,7 @@ main () {
   pushd "$openpype_root" > /dev/null || return > /dev/null
 
   version_command="import os;import re;version={};exec(open(os.path.join('$openpype_root', 'openpype', 'version.py')).read(), version);print(re.search(r'(\d+\.\d+.\d+).*', version['__version__'])[1]);"
-  openpype_version="$(python3 <<< ${version_command})"
+  openpype_version="$(python <<< ${version_command})"
 
   _inside_openpype_tool="1"
 

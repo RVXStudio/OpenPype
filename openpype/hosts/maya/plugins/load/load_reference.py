@@ -172,10 +172,6 @@ class ReferenceLoader(openpype.hosts.maya.api.plugin.ReferenceLoader):
                     "{}.displayHandle".format(group_name), display_handle
                 )
 
-<<<<<<< HEAD
-                settings = get_project_settings(project_name)
-=======
->>>>>>> 5125b21b66b8cbceed4f227abe17b6d1088f5ec0
                 colors = settings['maya']['load']['colors']
                 c = colors.get(family)
                 if c is not None:

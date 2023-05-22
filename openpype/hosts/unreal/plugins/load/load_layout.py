@@ -19,11 +19,7 @@ from openpype.pipeline import (
     loaders_from_representation,
     load_container,
     get_representation_path,
-<<<<<<< HEAD
-    AVALON_CONTAINER_ID,
-=======
     AYON_CONTAINER_ID,
->>>>>>> 5125b21b66b8cbceed4f227abe17b6d1088f5ec0
     get_current_project_name,
 )
 from openpype.pipeline.context_tools import get_current_project_asset

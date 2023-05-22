@@ -53,7 +53,6 @@ class CollectAERender(publish.AbstractCollectRender):
         version = context.data["version"]
 
         project_entity = context.data["projectEntity"]
-        project_settings = context.data["project_settings"]
 
         compositions = CollectAERender.get_stub().get_items(True)
         compositions_by_id = {item.id: item for item in compositions}
@@ -134,9 +133,7 @@ class CollectAERender(publish.AbstractCollectRender):
                 is_local = not inst.data["creator_attributes"].get("farm")
             if is_local:
                 # for local renders
-                instance = self._update_for_local(
-                    instance, project_entity, project_settings
-                )
+                instance = self._update_for_local(instance, project_entity)
             else:
                 fam = "render.farm"
                 if fam not in instance.families:
@@ -218,7 +215,7 @@ class CollectAERender(publish.AbstractCollectRender):
         # for submit_publish_job
         return base_dir
 
-    def _update_for_local(self, instance, project_entity, project_settings):
+    def _update_for_local(self, instance, project_entity):
         """Update old saved instances to current publishing format"""
         instance.stagingDir = tempfile.mkdtemp()
         instance.projectEntity = project_entity
@@ -226,17 +223,4 @@ class CollectAERender(publish.AbstractCollectRender):
         if fam not in instance.families:
             instance.families.append(fam)
 
-<<<<<<< HEAD
-        reviewable_subset_filter = (project_settings["deadline"]
-                                    ["publish"]
-                                    ["ProcessSubmittedJobOnFarm"]
-                                    ["aov_filter"].get(self.hosts[0]))
-        for aov_pattern in reviewable_subset_filter:
-            if re.match(aov_pattern, instance.subset):
-                instance.families.append("review")
-                instance.review = True
-                break
-
-=======
->>>>>>> 5125b21b66b8cbceed4f227abe17b6d1088f5ec0
         return instance

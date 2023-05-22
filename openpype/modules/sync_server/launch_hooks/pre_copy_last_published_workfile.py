@@ -8,9 +8,6 @@ from openpype.client.entities import (
 
 from openpype.lib import PreLaunchHook
 from openpype.lib.profiles_filtering import filter_profiles
-<<<<<<< HEAD:openpype/hooks/pre_copy_last_published_workfile.py
-from openpype.pipeline import get_representation_path
-=======
 from openpype.modules.sync_server.sync_server import (
     download_last_published_workfile,
 )
@@ -18,7 +15,6 @@ from openpype.pipeline.template_data import get_template_data
 from openpype.pipeline.workfile.path_resolving import (
     get_workfile_template_key,
 )
->>>>>>> 5125b21b66b8cbceed4f227abe17b6d1088f5ec0:openpype/modules/sync_server/launch_hooks/pre_copy_last_published_workfile.py
 from openpype.settings.lib import get_project_settings
 
 

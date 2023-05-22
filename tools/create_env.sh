@@ -88,9 +88,9 @@ done
 ###############################################################################
 detect_python () {
   echo -e "${BIGreen}>>>${RST} Using python \c"
-  command -v python3 >/dev/null 2>&1 || { echo -e "${BIRed}- NOT FOUND${RST} ${BIYellow}You need Python 3.9 installed to continue.${RST}"; return 1; }
+  command -v python >/dev/null 2>&1 || { echo -e "${BIRed}- NOT FOUND${RST} ${BIYellow}You need Python 3.9 installed to continue.${RST}"; return 1; }
   local version_command="import sys;print('{0}.{1}'.format(sys.version_info[0], sys.version_info[1]))"
-  local python_version="$(python3 <<< ${version_command})"
+  local python_version="$(python <<< ${version_command})"
   oIFS="$IFS"
   IFS=.
   set -- $python_version
@@ -102,7 +102,7 @@ detect_python () {
       echo -e "${BIWhite}[${RST} ${BIGreen}$1.$2${RST} ${BIWhite}]${RST}"
     fi
   else
-    command -v python3 >/dev/null 2>&1 || { echo -e "${BIRed}$1.$2$ - ${BIRed}FAILED${RST} ${BIYellow}Version is old and unsupported${RST}"; return 1; }
+    command -v python >/dev/null 2>&1 || { echo -e "${BIRed}$1.$2$ - ${BIRed}FAILED${RST} ${BIYellow}Version is old and unsupported${RST}"; return 1; }
   fi
 }
 
@@ -111,7 +111,7 @@ install_poetry () {
   export POETRY_HOME="$openpype_root/.poetry"
   export POETRY_VERSION="1.3.2"
   command -v curl >/dev/null 2>&1 || { echo -e "${BIRed}!!!${RST}${BIYellow} Missing ${RST}${BIBlue}curl${BIYellow} command.${RST}"; return 1; }
-  curl -sSL https://install.python-poetry.org/ | python3 -
+  curl -sSL https://install.python-poetry.org/ | python -
 }
 
 ##############################################################################
@@ -190,9 +190,9 @@ main () {
   # cx_freeze will crash on missing __pychache__ on these but
   # reinstalling them solves the problem.
   echo -e "${BIGreen}>>>${RST} Post-venv creation fixes ..."
-  local openpype_index=$("$POETRY_HOME/bin/poetry" run python3 "$openpype_root/tools/parse_pyproject.py" tool.poetry.source.0.url)
+  local openpype_index=$("$POETRY_HOME/bin/poetry" run python "$openpype_root/tools/parse_pyproject.py" tool.poetry.source.0.url)
   echo -e "${BIGreen}-   ${RST} Using index: ${BIWhite}$openpype_index${RST}"
-  "$POETRY_HOME/bin/poetry" run python3 -m pip install --disable-pip-version-check --force-reinstall pip
+  "$POETRY_HOME/bin/poetry" run python -m pip install --disable-pip-version-check --force-reinstall pip
   echo -e "${BIGreen}>>>${RST} Installing pre-commit hooks ..."
   "$POETRY_HOME/bin/poetry" run pre-commit install
 }

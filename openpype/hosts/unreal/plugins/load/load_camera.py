@@ -8,11 +8,7 @@ from unreal import EditorLevelLibrary
 from unreal import EditorLevelUtils
 from openpype.client import get_assets, get_asset_by_name
 from openpype.pipeline import (
-<<<<<<< HEAD
-    AVALON_CONTAINER_ID,
-=======
     AYON_CONTAINER_ID,
->>>>>>> 5125b21b66b8cbceed4f227abe17b6d1088f5ec0
     get_current_project_name,
 )
 from openpype.hosts.unreal.api import plugin

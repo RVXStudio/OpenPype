@@ -21,27 +21,6 @@ class FbxLoader(load.LoaderPlugin):
 
         filepath = self.filepath_from_context(context)
         filepath = os.path.normpath(filepath)
-<<<<<<< HEAD
-
-        fbx_import_cmd = (
-            f"""
-
-FBXImporterSetParam "Animation" true
-FBXImporterSetParam "Cameras" true
-FBXImporterSetParam "AxisConversionMethod" true
-FbxExporterSetParam "UpAxis" "Y"
-FbxExporterSetParam "Preserveinstances" true
-
-importFile @"{filepath}" #noPrompt using:FBXIMP
-        """)
-
-        self.log.debug(f"Executing command: {fbx_import_cmd}")
-        rt.execute(fbx_import_cmd)
-
-        container_name = f"{name}_CON"
-
-        asset = rt.getNodeByName(f"{name}")
-=======
         rt.FBXImporterSetParam("Animation", True)
         rt.FBXImporterSetParam("Camera", True)
         rt.FBXImporterSetParam("AxisConversionMethod", True)
@@ -58,7 +37,6 @@ importFile @"{filepath}" #noPrompt using:FBXIMP
 
         for selection in rt.getCurrentSelection():
             selection.Parent = container
->>>>>>> 5125b21b66b8cbceed4f227abe17b6d1088f5ec0
 
         return containerise(
             name, [container], context, loader=self.__class__.__name__)
