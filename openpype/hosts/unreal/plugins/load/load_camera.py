@@ -287,6 +287,26 @@ class CameraLoader(plugin.Loader):
                 path
             )
 
+        # Set range of all sections
+        # Changing the range of the section is not enough. We need to change
+        # the frame of all the keys in the section.
+        for possessable in cam_seq.get_possessables():
+            for tracks in possessable.get_tracks():
+                for section in tracks.get_sections():
+                    section.set_range(
+                        data.get('clipIn'),
+                        data.get('clipOut') + 1)
+                    for channel in section.get_all_channels():
+                        for key in channel.get_keys():
+                            old_time = key.get_time().get_editor_property(
+                                'frame_number')
+                            old_time_value = old_time.get_editor_property(
+                                'value')
+                            new_time = old_time_value + (
+                                data.get('clipIn') - data.get('frameStart')
+                            )
+                            key.set_time(unreal.FrameNumber(value=new_time))
+
         # Create Asset Container
         unreal_pipeline.create_container(
             container=container_name, path=asset_dir)
@@ -346,7 +366,7 @@ class CameraLoader(plugin.Loader):
         maps = ar.get_assets(filter)
 
         # There should be only one map in the list
-        EditorLevelLibrary.load_level(maps[0].get_full_name())
+        EditorLevelLibrary.load_level(maps[0].get_asset().get_path_name())
 
         level_sequence = sequences[0].get_asset()
 
@@ -494,7 +514,7 @@ class CameraLoader(plugin.Loader):
         map = maps[0]
 
         EditorLevelLibrary.save_all_dirty_levels()
-        EditorLevelLibrary.load_level(map.get_full_name())
+        EditorLevelLibrary.load_level(map.get_asset().get_path_name())
 
         # Remove the camera from the level.
         actors = EditorLevelLibrary.get_all_level_actors()
@@ -504,7 +524,7 @@ class CameraLoader(plugin.Loader):
                 EditorLevelLibrary.destroy_actor(a)
 
         EditorLevelLibrary.save_all_dirty_levels()
-        EditorLevelLibrary.load_level(world.get_full_name())
+        EditorLevelLibrary.load_level(world.get_asset().get_path_name())
 
         # There should be only one sequence in the path.
         sequence_name = sequences[0].asset_name
