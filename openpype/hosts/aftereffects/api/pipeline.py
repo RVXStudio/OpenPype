@@ -20,7 +20,8 @@ from openpype.host import (
     IPublishHost
 )
 
-from .launch_logic import get_stub, ConnectionNotEstablishedYet
+from .launch_logic import get_stub
+from .ws_stub import ConnectionNotEstablishedYet
 
 log = Logger.get_logger(__name__)
 
