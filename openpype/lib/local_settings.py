@@ -30,10 +30,7 @@ import six
 import appdirs
 
 from openpype import AYON_SERVER_ENABLED
-from openpype.settings import (
-    get_local_settings,
-    get_system_settings
-)
+
 
 from openpype.client.mongo import validate_mongo_connection
 
@@ -603,6 +600,10 @@ def get_openpype_username():
     settings and last option is to use `getpass.getuser()` which returns
     machine username.
     """
+    from openpype.settings import (
+        get_local_settings,
+        get_system_settings
+    )
     username = os.environ.get("OPENPYPE_USERNAME")
     if not username:
         local_settings = get_local_settings()
@@ -617,6 +618,10 @@ def get_openpype_username():
 
 
 def is_admin_password_required():
+    from openpype.settings import (
+        get_local_settings,
+        get_system_settings
+    )
     system_settings = get_system_settings()
     password = system_settings["general"].get("admin_password")
     if not password:

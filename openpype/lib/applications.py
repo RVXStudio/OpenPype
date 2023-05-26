@@ -15,11 +15,7 @@ from openpype.client import (
     get_project,
     get_asset_by_name,
 )
-from openpype.settings import (
-    get_system_settings,
-    get_project_settings,
-    get_local_settings
-)
+
 from openpype.settings.constants import (
     METADATA_KEYS,
     M_DYNAMIC_KEY_LABEL
@@ -394,6 +390,11 @@ class ApplicationManager:
         self.refresh()
 
     def refresh(self):
+        from openpype.settings import (
+            get_system_settings,
+            get_project_settings,
+            get_local_settings
+        )
         """Refresh applications from settings."""
         self.app_groups.clear()
         self.applications.clear()
@@ -1325,11 +1326,18 @@ class EnvironmentPrepData(dict):
     Args:
         data (dict): Data must contain required keys.
     """
+
     required_keys = (
         "project_doc", "asset_doc", "task_name", "app", "anatomy"
     )
 
     def __init__(self, data):
+        from openpype.settings import (
+            get_system_settings,
+            get_project_settings,
+            get_local_settings
+        )
+
         for key in self.required_keys:
             if key not in data:
                 raise MissingRequiredKey(key)
@@ -1472,6 +1480,11 @@ def prepare_app_environments(
             result will be stored.
     """
     import acre
+    from openpype.settings import (
+        get_system_settings,
+        get_project_settings,
+        get_local_settings
+    )
 
     app = data["app"]
     log = data["log"]
@@ -1610,6 +1623,11 @@ def apply_project_environments_value(
             environments.
     """
     import acre
+    from openpype.settings import (
+        get_system_settings,
+        get_project_settings,
+        get_local_settings
+    )
 
     if project_settings is None:
         project_settings = get_project_settings(project_name)
@@ -1633,6 +1651,11 @@ def prepare_context_environments(data, env_group=None, modules_manager=None):
     """
 
     from openpype.pipeline.template_data import get_template_data
+    from openpype.settings import (
+        get_system_settings,
+        get_project_settings,
+        get_local_settings
+    )
 
     # Context environments
     log = data["log"]
@@ -1859,6 +1882,11 @@ def should_start_last_workfile(
         bool: True if host should start workfile.
 
     """
+    from openpype.settings import (
+        get_system_settings,
+        get_project_settings,
+        get_local_settings
+    )
 
     project_settings = get_project_settings(project_name)
     profiles = (
@@ -1909,6 +1937,11 @@ def should_workfile_tool_start(
         bool: True if host should start workfile.
 
     """
+    from openpype.settings import (
+        get_system_settings,
+        get_project_settings,
+        get_local_settings
+    )
 
     project_settings = get_project_settings(project_name)
     profiles = (
