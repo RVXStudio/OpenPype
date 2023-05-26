@@ -1,7 +1,7 @@
 import os
 import shutil
 import sys
-import importlib
+import importlib.util
 import platform
 
 
@@ -38,11 +38,3 @@ if the_build is not None:
 
     os.makedirs(dest_dir, exist_ok=True)
     shutil.copytree(src_dir, dest_dir, dirs_exist_ok=True)
-
-
-
-if __name__ == "__main__":
-    from argparse import ArgumentParser
-    parser = ArgumentParser()
-    parser.add_argument('--build')
-    args = parser.parse_args()
