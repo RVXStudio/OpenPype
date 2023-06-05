@@ -153,6 +153,7 @@ class NukeHost(
 def add_nuke_callbacks():
     """ Adding all available nuke callbacks
     """
+    nuke_settings = get_current_project_settings()["nuke"]
     workfile_settings = WorkfileSettings()
     # Set context settings.
     nuke.addOnCreate(
@@ -171,7 +172,10 @@ def add_nuke_callbacks():
     # # set apply all workfile settings on script load and save
     nuke.addOnScriptLoad(WorkfileSettings().set_context_settings)
 
-    nuke.addFilenameFilter(dirmap_file_name_filter)
+    if nuke_settings["nuke-dirmap"]["enabled"]:
+        log.info("Added Nuke's dirmaping callback ...")
+        # Add dirmap for file paths.
+        nuke.addFilenameFilter(dirmap_file_name_filter)
 
     log.info("Added Nuke callbacks ...")
 
