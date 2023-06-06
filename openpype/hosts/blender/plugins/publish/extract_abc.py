@@ -34,7 +34,10 @@ class ExtractABC(publish.Extractor):
         asset_group = None
 
         for obj in instance:
-            obj.select_set(True)
+            if isinstance(obj, bpy.types.Object):
+                obj.select_set(True)
+            else:
+                self.log.info(f"Skipping non-object {obj}")
             selected.append(obj)
             if obj.get(AVALON_PROPERTY):
                 asset_group = obj
