@@ -39,12 +39,9 @@ def _get_qt_app():
             QtCore.Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
         )
 
-<<<<<<< HEAD
-    return app
-=======
+
     return QtWidgets.QApplication(sys.argv)
 
->>>>>>> 67144ebc7f652cac7f845497d9e9c014587b58c4
 
 def open_dialog():
     """Show Igniter dialog."""

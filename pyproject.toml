@@ -76,6 +76,7 @@ cryptography = "39.0.0"
 urllib3 = "1.26.16"
 typing-extensions = "4.6.2"
 
+
 [tool.poetry.dev-dependencies]
 flake8 = "^6.0"
 autopep8 = "^2.0"
