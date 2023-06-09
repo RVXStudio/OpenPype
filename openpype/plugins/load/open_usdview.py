@@ -2,7 +2,7 @@
 from openpype.lib import ApplicationManager
 from openpype.pipeline import load
 
-print("STUFF")
+
 def existing_usdview_path():
     app_manager = ApplicationManager()
     usdview_list = []
@@ -41,4 +41,4 @@ class OpenInUsdview(load.LoaderPlugin):
         usdview = app_manager.applications.get(last_usdview_version)
         usdview.arguments.append(path)
 
-        app_manager.launch(last_usdview_version)
+        app_manager.launch(last_usdview_version, project_name=context.get('project')['name'], asset_name=context.get('asset')['name'], task_name='')
