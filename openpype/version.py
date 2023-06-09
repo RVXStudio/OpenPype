@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
 """Package declaring Pype version."""
 
-__version__ = "3.15.10.rvx.1"
+__version__ = "3.15.10.rvx.2"
 
