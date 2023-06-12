@@ -133,7 +133,8 @@ class SidePanelWidget(QtWidgets.QWidget):
 
         orig_note = ""
         if workfile_doc:
-            orig_note = workfile_doc["data"].get("note") or orig_note
+            # there is no workfile data anymore I guess
+            pass  # orig_note = workfile_doc["data"].get("note") or orig_note
 
         self._orig_note = orig_note
         self._note_input.setPlainText(orig_note)
