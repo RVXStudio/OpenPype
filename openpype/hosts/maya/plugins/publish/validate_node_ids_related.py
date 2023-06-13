@@ -17,6 +17,7 @@ class ValidateNodeIDsRelated(pyblish.api.InstancePlugin):
                 "look",
                 "rig"]
     optional = True
+    enabled = False
 
     actions = [openpype.hosts.maya.api.action.SelectInvalidAction,
                openpype.hosts.maya.api.action.GenerateUUIDsOnInvalidAction]

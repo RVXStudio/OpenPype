@@ -25,6 +25,8 @@ class ValidateNodeIDs(pyblish.api.InstancePlugin):
                 "yetiRig",
                 "assembly"]
 
+    enabled = False
+
     actions = [openpype.hosts.maya.api.action.SelectInvalidAction,
                openpype.hosts.maya.api.action.GenerateUUIDsOnInvalidAction]
 
