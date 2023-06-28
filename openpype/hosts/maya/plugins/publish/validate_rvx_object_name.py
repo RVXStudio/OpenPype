@@ -5,7 +5,7 @@ import re
 
 import openpype.hosts.maya.api.action
 from openpype.pipeline.publish import ValidateContentsOrder
-
+import rvx_maya.lib
 
 class ValidateObjectName(pyblish.api.InstancePlugin):
     order = pyblish.api.ValidatorOrder
@@ -18,27 +18,38 @@ class ValidateObjectName(pyblish.api.InstancePlugin):
     label = 'Validate object names'
 
     actions = [openpype.hosts.maya.api.action.SelectInvalidAction]
-
+    pattern = None
 
     @classmethod
-    def get_invalid(cls, instance, pattern):
+    def get_invalid(cls, instance):
         """Get invalid nodes in instance.
 
         Args:
             instance (:class:`pyblish.api.Instance`): published instance.
 
         """
-        transforms = mc.ls(instance, type='transform', long=False)
+        invalid = rvx_maya.lib.get_invalid_names(instance, top_nodes=instance.data.get('setMembers', []))
+        # transforms = mc.ls(instance, type='transform', long=False)
+        # # print('\n'.join(list(instance.data.keys())))
+        # for i in instance.data.get('setMembers', []):
+        #     print(f'INSTANCE: {i}')
 
-        invalid = []
-        for transform in transforms:
-            if not cls.is_valid_name(transform, pattern):
-                invalid.append(transform)
+        # invalid = []
+        # for transform in transforms:
+        #         shapes = mc.listRelatives(transform,
+        #                                     shapes=True,
+        #                                     fullPath=True,
+        #                                     noIntermediate=True)
+
+        #         shape_type = mc.nodeType(shapes[0]) if shapes else "group"
+
+        #     if not cls.is_valid_name(transform, shape_type):
+        #         invalid.append(transform) 
         return invalid
 
     @classmethod
-    def is_valid_name(cls, transform, pattern):
-        return re.match(pattern, transform) is not None
+    def is_valid_name(cls, transform, shape_type):
+        return re.match(cls.pattern, transform) is not None
 
     def process(self, instance):
         """Process all the nodes in the instance.
@@ -47,20 +58,21 @@ class ValidateObjectName(pyblish.api.InstancePlugin):
             instance (:class:`pyblish.api.Instance`): published instance.
 
         """
-        product_type = instance.data['family']
-        rvx_settings = ayon_api.get_addons_settings(instance.context.data['projectName'])
-        regex_list = rvx_settings['rvx']['maya']['PublishSettings']['ValidateObjectNameRegex']
-        for rl in regex_list:
-            self.log.info(f'{product_type} vs {rl["product_type"]}')
-            if product_type in rl['product_type']:
-                the_regex = rl['validation_regex']
-                break
-        else:
-            self.log.warning("no product found")
-            return
 
-        self.log.info(f'regx {the_regex}')
-        invalid = self.get_invalid(instance, the_regex)
+        # product_type = instance.data['family']
+        # rvx_settings = ayon_api.get_addons_settings(instance.context.data['projectName'])
+        # regex_list = rvx_settings['rvx']['maya']['PublishSettings']['ValidateObjectNameRegex']
+        # for rl in regex_list:
+        #     self.log.info(f'{product_type} vs {rl["product_type"]}')
+        #     if product_type in rl['product_type']:
+        #         self.__class__.pattern = rl['validation_regex']
+        #         break
+        # else:
+        #     self.log.warning("no product found")
+        #     return
+
+        # self.log.info(f'regx {self.__class__.pattern}')
+        invalid = self.get_invalid(instance)
         if invalid:
             raise ValueError("Invalid names found (correct pattern: <location(optional)>_<geoDescription>_<variant>_<condition>_<instance>_<material>_<geoType>): {0}".format(invalid))
     '''
