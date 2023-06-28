@@ -542,7 +542,11 @@ class MongoOperationsSession(BaseOperationsSession):
         return operation
 
 
-def create_project(project_name, project_code, library_project=False):
+def create_project(
+    project_name,
+    project_code,
+    library_project=False,
+):
     """Create project using OpenPype settings.
 
     This project creation function is not validating project document on
