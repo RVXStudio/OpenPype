@@ -25,7 +25,7 @@ class ExtractColorspaceData(publish.Extractor,
         }
     """
     label = "Extract Colorspace data"
-    order = pyblish.api.ExtractorOrder + 0.49
+    order = pyblish.api.ExtractorOrder + 0.01
 
     def process(self, instance):
         representations = instance.data.get("representations")

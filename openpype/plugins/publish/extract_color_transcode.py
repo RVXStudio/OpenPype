@@ -98,7 +98,7 @@ class ExtractOIIOTranscode(publish.Extractor):
                 self.log.warning("Config file doesn't exist, skipping")
                 continue
 
-            for output_name, output_def in profile.get("outputs", {}).items():
+            for output_def in profile.get("outputs", []):
                 new_repre = copy.deepcopy(repre)
 
                 original_staging_dir = new_repre["stagingDir"]
@@ -114,7 +114,7 @@ class ExtractOIIOTranscode(publish.Extractor):
                 output_extension = output_extension.replace('.', '')
                 self._rename_in_representation(new_repre,
                                                files_to_convert,
-                                               output_name,
+                                               output_extension, #output_name,
                                                output_extension)
 
                 transcoding_type = output_def["transcoding_type"]
