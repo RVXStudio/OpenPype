@@ -18,6 +18,7 @@ class ExtractAssembly(publish.Extractor):
     label = "Extract Assembly"
     hosts = ["maya"]
     families = ["assembly"]
+    active = False
 
     def process(self, instance):
 
