@@ -79,6 +79,16 @@ class InvalidRepresentationContext(ValueError):
     pass
 
 
+class LoaderSwitchNotImplementedError(NotImplementedError):
+    """Error when `switch` is used with Loader that has no implementation."""
+    pass
+
+
+class LoaderNotFoundError(RuntimeError):
+    """Error when Loader plugin for a loader name is not found."""
+    pass
+
+
 def get_repres_contexts(representation_ids, dbcon=None):
     """Return parenthood context for representation.
 
@@ -435,7 +445,10 @@ def remove_container(container):
 
     Loader = _get_container_loader(container)
     if not Loader:
-        raise RuntimeError("Can't remove container. See log for details.")
+        raise LoaderNotFoundError(
+            "Can't remove container because loader '{}' was not found."
+            .format(container.get("loader"))
+        )
 
     return Loader().remove(container)
 
@@ -482,7 +495,10 @@ def update_container(container, version=-1):
     # Run update on the Loader for this container
     Loader = _get_container_loader(container)
     if not Loader:
-        raise RuntimeError("Can't update container. See log for details.")
+        raise LoaderNotFoundError(
+            "Can't update container because loader '{}' was not found."
+            .format(container.get("loader"))
+        )
 
     return Loader().update(container, new_representation)
 
@@ -503,15 +519,18 @@ def switch_container(container, representation, loader_plugin=None):
         loader_plugin = _get_container_loader(container)
 
     if not loader_plugin:
-        raise RuntimeError("Can't switch container. See log for details.")
+        raise LoaderNotFoundError(
+            "Can't switch container because loader '{}' was not found."
+            .format(container.get("loader"))
+        )
 
     if not hasattr(loader_plugin, "switch"):
         # Backwards compatibility (classes without switch support
         # might be better to just have "switch" raise NotImplementedError
         # on the base class of Loader\
-        raise RuntimeError("Loader '{}' does not support 'switch'".format(
-            loader_plugin.label
-        ))
+        raise LoaderSwitchNotImplementedError(
+            "Loader {} does not support 'switch'".format(loader_plugin.label)
+        )
 
     # Get the new representation to switch to
     project_name = legacy_io.active_project()
@@ -521,7 +540,11 @@ def switch_container(container, representation, loader_plugin=None):
 
     new_context = get_representation_context(new_representation)
     if not is_compatible_loader(loader_plugin, new_context):
-        raise AssertionError("Must be compatible Loader")
+        raise IncompatibleLoaderError(
+            "Loader {} is incompatible with {}".format(
+                loader_plugin.__name__, new_context["subset"]["name"]
+            )
+        )
 
     loader = loader_plugin(new_context)
 
