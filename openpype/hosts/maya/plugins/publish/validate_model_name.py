@@ -1,21 +1,24 @@
 # -*- coding: utf-8 -*-
 """Validate model nodes names."""
 import os
-import re
 import platform
+import re
 
+import gridfs
+import pyblish.api
 from maya import cmds
 
-import pyblish.api
-from openpype.pipeline.publish import ValidateContentsOrder
 import openpype.hosts.maya.api.action
+from openpype.client.mongo import OpenPypeMongoConnection
 from openpype.hosts.maya.api.shader_definition_editor import (
     DEFINITION_FILENAME)
-from openpype.client.mongo import OpenPypeMongoConnection
-import gridfs
+from openpype.pipeline import legacy_io
+from openpype.pipeline.publish import (
+    OptionalPyblishPluginMixin, PublishValidationError, ValidateContentsOrder)
 
 
-class ValidateModelName(pyblish.api.InstancePlugin):
+class ValidateModelName(pyblish.api.InstancePlugin,
+                        OptionalPyblishPluginMixin):
     """Validate name of model
 
     starts with (somename)_###_(materialID)_GEO
@@ -70,13 +73,7 @@ class ValidateModelName(pyblish.api.InstancePlugin):
             invalid.append(top_group)
         else:
             if "asset" in r.groupindex:
-                # TODO change to only 'instance.data["asset"]' when legacy
-                #   create is not used in Maya
-                asset_name = (
-                    instance.data.get("asset")
-                    or instance.context.data["asset"]
-                )
-                if m.group("asset") != asset_name:
+                if m.group("asset") != legacy_io.Session["AVALON_ASSET"]:
                     cls.log.error("Invalid asset name in top level group.")
                     return top_group
             if "subset" in r.groupindex:
@@ -84,7 +81,7 @@ class ValidateModelName(pyblish.api.InstancePlugin):
                     cls.log.error("Invalid subset name in top level group.")
                     return top_group
             if "project" in r.groupindex:
-                if m.group("project") != instance.context.data["projectName"]:
+                if m.group("project") != legacy_io.Session["AVALON_PROJECT"]:
                     cls.log.error("Invalid project name in top level group.")
                     return top_group
 
@@ -153,7 +150,11 @@ class ValidateModelName(pyblish.api.InstancePlugin):
 
     def process(self, instance):
         """Plugin entry point."""
+        if not self.is_active(instance.data):
+            return
+
         invalid = self.get_invalid(instance)
 
         if invalid:
-            raise RuntimeError("Model naming is invalid. See the log.")
+            raise PublishValidationError(
+                "Model naming is invalid. See the log.")

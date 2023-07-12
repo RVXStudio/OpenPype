@@ -73,10 +73,12 @@ def install():
 
         cmds.menuItem(divider=True)
 
-        # Create default items
         cmds.menuItem(
             "Create...",
-            command=lambda *args: host_tools.show_creator(parent=parent_widget)
+            command=lambda *args: host_tools.show_publisher(
+                parent=parent_widget,
+                tab="create"
+            )
         )
 
         cmds.menuItem(
@@ -89,8 +91,9 @@ def install():
 
         cmds.menuItem(
             "Publish...",
-            command=lambda *args: host_tools.show_publish(
-                parent=parent_widget
+            command=lambda *args: host_tools.show_publisher(
+                parent=parent_widget,
+                tab="publish"
             ),
             image=pyblish_icon
         )
