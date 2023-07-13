@@ -4,10 +4,14 @@ import maya.cmds as mc
 import re
 
 import openpype.hosts.maya.api.action
-from openpype.pipeline.publish import ValidateContentsOrder
+from openpype.pipeline.publish import (
+    RepairAction,
+    ValidateContentsOrder,
+    OptionalPyblishPluginMixin
+)
 import rvx_maya.lib
 
-class ValidateObjectName(pyblish.api.InstancePlugin):
+class ValidateObjectName(pyblish.api.InstancePlugin, OptionalPyblishPluginMixin):
     order = pyblish.api.ValidatorOrder
 
     hosts = ['maya']
@@ -15,7 +19,7 @@ class ValidateObjectName(pyblish.api.InstancePlugin):
 
     order = ValidateContentsOrder
     optional = True
-    label = 'Validate object names'
+    label = '[RVX] Validate object names'
 
     actions = [openpype.hosts.maya.api.action.SelectInvalidAction]
     pattern = None
@@ -72,6 +76,9 @@ class ValidateObjectName(pyblish.api.InstancePlugin):
         #     return
 
         # self.log.info(f'regx {self.__class__.pattern}')
+        if not self.is_active(instance.data):
+            self.log.info('I aint active. Doing nothing')
+            return
         invalid = self.get_invalid(instance)
         if invalid:
             raise ValueError("Invalid names found (correct pattern: <location(optional)>_<geoDescription>_<variant>_<condition>_<instance>_<material>_<geoType>): {0}".format(invalid))
