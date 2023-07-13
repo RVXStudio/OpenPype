@@ -27,7 +27,10 @@ from openpype.client import (
 import pyblish.api
 from openpype.pipeline import publish
 import os
+
+# import rvx-specific stuff
 import rvx_usd
+import rvx_ayon
 
 
 class CollectUSDAssembly(pyblish.api.ContextPlugin):
@@ -38,8 +41,9 @@ class CollectUSDAssembly(pyblish.api.ContextPlugin):
 
     def process(self, context):
         # self.log.info(context.data.keys())
+        self.log.info('starting collection')
         the_asset = context.data['asset']
-        interesting_instances = {'render': None, 'proxy': None, 'guide': None}
+        interesting_instances = {'render': False, 'proxy': False, 'guide': False}
         # find the interesting isntances in the current asset (in the case we are publishing all over the place)
         for instance in context:
             if instance.data['asset'] != the_asset:
@@ -50,13 +54,16 @@ class CollectUSDAssembly(pyblish.api.ContextPlugin):
                     interesting_instances[k] = True
                     break
         # assert that there are three purposes in the file
-        assert all(interesting_instances.values()), f"Some purposes seem to be missing {interesting_instances}"
+        if not all(interesting_instances.values()):
+            self.log.warning(f"Some purposes seem to be missing: the missing purposes wil be fetched from db [{interesting_instances}]")
 
         assembly_instance = context.create_instance('usd_assembly', family='assembly')
         assembly_instance.data['asset'] = the_asset
         assembly_instance.data['subset'] = 'assemblyMain'
         assembly_instance.data['purpose_instances'] = interesting_instances
         assembly_instance.data['setMembers'] = [True]  # this is just to fool some validator down the line
+        assembly_instance.data['usd_assembly_instances'] = interesting_instances
+        self.log.info(f'Collectin usd assembly {interesting_instances}')
 
 
 def get_frame_padded(frame, padding):
@@ -102,20 +109,22 @@ class ExtractUSDAssembly(publish.Extractor):
 
         # we have already checked (when collecting) if the current workfile
         # has the purposes at all
-        purposes = ['render', 'proxy', 'guide']
         purpose_instances = {}
         parent_dir = self.staging_dir(instance)
         filename = "{name}.usda".format(**instance.data)
         usd_assembly_path = os.path.join(parent_dir, filename)
         self.log.info(f'outputting usd assembly: [{usd_assembly_path}]')
-        for other_instance in instance.context:
-            for purpose_name in purposes:
-                if other_instance.data.get('variant', '').lower() == purpose_name:
-                    p_dict = {'instance': other_instance, 'is_publishing': other_instance.data.get('active')}
-                    purpose_instances[purpose_name] = p_dict
-                    self.log.info('oi - rep')
-                    self.log.info(other_instance.data.get('representations'))
+        for purpose_name, do_pub in instance.data['usd_assembly_instances'].items():
+            self.log.info(f'looping {purpose_name}, {do_pub}')
+            other_instance = None
+            for inst in instance.context:
+                if inst.data.get('variant', '').lower() == purpose_name:
+                    self.log.info(f'{purpose_name} is doing pub: {do_pub}')
+                    other_instance = inst
                     continue
+            p_dict = {'instance': other_instance, 'is_publishing': do_pub}
+            purpose_instances[purpose_name] = p_dict
+
         self.log.info(f'Ptime {purpose_instances}')
 
         usd_purpose_dict = {}
@@ -123,7 +132,7 @@ class ExtractUSDAssembly(publish.Extractor):
             if purpose_data.get('is_publishing', False):
                 purpose_path = self.create_next_published_path(purpose_name, purpose_data)
             else:
-                purpose_path = self.get_latest_published_path(purpose_name, purpose_data)
+                purpose_path = self.get_latest_published_path(purpose_name, instance)
             usd_purpose_dict[purpose_name] = purpose_path
 
         rvx_usd.create_purpose_assembly('tester', usd_purpose_dict, usd_assembly_path)
@@ -140,34 +149,26 @@ class ExtractUSDAssembly(publish.Extractor):
         instance.data["representations"].append(representation)
         self.log.info("Extracted {} to {}".format(instance, parent_dir))
 
-    def get_latest_published_path(self, purpose_name, data):
-        instance = data['instance']
-        project_name = instance.context.data["projectName"]
+    def get_latest_published_path(self, purpose_name, assembly_instance):
+        self.log.info(f'Fetching latest published path for {purpose_name}')
 
-        op_session = OperationsSession()
-        subset = self.prepare_subset(
-            instance, op_session, project_name
-        )
-        existing_version = get_version_by_name(
-            project_name,
-            instance.data.get("latestVersion"),
-            subset["_id"],
-            fields=["_id"]
-        )
+        project_name = assembly_instance.context.data["projectName"]
+        for k, v in assembly_instance.data.items():
+            self.log.info(f'** {k}: {v}')
+        folder_path = '{}/{}'.format(assembly_instance.data['anatomyData']['hierarchy'], assembly_instance.data['asset'])
 
-        existing_repres_by_name = {
-            repre_doc["name"].lower(): repre_doc
-            for repre_doc in get_representations(
-                project_name,
-                version_ids=[existing_version["_id"]]
-            ) if repre_doc.get('name') == 'usd'
-        }
-        self.log.info(f"EXISTING {existing_repres_by_name}")
-        assert len(existing_repres_by_name) > 0, "No USD model representation found!"
+        self.log.info(f'getting reps {folder_path}, {purpose_name}')
+        usd_reps = rvx_ayon.get_usd_representations(project_name, folder_path, product_variants=[purpose_name])
+        self.log.info(f'got {usd_reps}')
 
-        return existing_repres_by_name['usd']['data']['path']
+        usd_rep_path = usd_reps.get(purpose_name)
+        if usd_rep_path is None:
+            raise RuntimeError(f'No usd rep found for {purpose_name}')
+
+        return usd_rep_path
 
     def create_next_published_path(self, purpose_name, data):
+        self.log.info(f'creating next published path [{purpose_name}]')
         instance = data['instance']
         project_name = instance.context.data["projectName"]
         filtered_repres = [r for r in instance.data.get('representations', []) if r.get('name') == 'usd']
