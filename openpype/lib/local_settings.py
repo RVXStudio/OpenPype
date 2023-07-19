@@ -526,7 +526,7 @@ def get_ayon_appdirs(*args):
     """
 
     return os.path.join(
-        appdirs.user_data_dir("ayon", "ynput"),
+        appdirs.user_data_dir("AYON", "Ynput"),
         *args
     )
 
