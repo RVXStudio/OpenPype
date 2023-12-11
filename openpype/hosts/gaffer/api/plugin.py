@@ -4,6 +4,11 @@ from abc import abstractmethod
 from openpype.pipeline import (
     Creator as NewCreator,
     CreatedInstance,
+    CreatorError,
+)
+
+from openpype.lib import (
+    BoolDef
 )
 
 from openpype.hosts.gaffer.api import (
@@ -66,6 +71,10 @@ class CreatorImprintReadMixin:
         imprint(node, openpype_data)
 
 
+class GafferCreatorError(CreatorError):
+    pass
+
+
 class GafferCreatorBase(NewCreator, CreatorImprintReadMixin):
     """Base class for single node Creators in Gaffer.
 
@@ -75,6 +84,7 @@ class GafferCreatorBase(NewCreator, CreatorImprintReadMixin):
 
     """
     default_variants = ["Main"]
+    selected_nodes = []
 
     @abstractmethod
     def _create_node(self,
@@ -97,6 +107,15 @@ class GafferCreatorBase(NewCreator, CreatorImprintReadMixin):
         """
         pass
 
+    def set_selected_nodes(self, pre_create_data, script):
+        if pre_create_data.get("use_selection"):
+            self.selected_nodes = script.selection()
+            if len(self.selected_nodes) == 0:
+                raise GafferCreatorError("Creator error: No nodes selected")
+
+        else:
+            self.selected_nodes = []
+
     def create(self, subset_name, instance_data, pre_create_data):
         instance_data.update({
             "id": "pyblish.avalon.instance",
@@ -106,9 +125,11 @@ class GafferCreatorBase(NewCreator, CreatorImprintReadMixin):
         script = get_root()
         assert script, "Must have a gaffer scene script as root"
 
+        # populate self.selecte_nodes
+        self.set_selected_nodes(pre_create_data, script)
+
         # Create a box node for publishing
-        node = self._create_node(subset_name, pre_create_data)
-        script.addChild(node)
+        node = self._create_node(subset_name, pre_create_data, script)
 
         # Register the CreatedInstance
         instance = CreatedInstance(
@@ -162,3 +183,12 @@ class GafferCreatorBase(NewCreator, CreatorImprintReadMixin):
 
             # Remove the collected CreatedInstance to remove from UI directly
             self._remove_instance_from_context(instance)
+
+    def get_pre_create_attr_defs(self):
+        return [
+            BoolDef(
+                "use_selection",
+                default=False,
+                label="Use selection"
+            )
+        ]

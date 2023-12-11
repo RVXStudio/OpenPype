@@ -150,7 +150,8 @@ class GafferHost(HostBase, IWorkfileHost, ILoadHost, IPublishHost):
 
     def _on_scene_new(self, script_container, script_node):
         # Update the projectRootDirectory variable for new workfile scripts
-        script_node['variables']['projectRootDirectory']['value'].setValue(self.work_root(os.environ))  # noqa
+        script_node['variables']['projectRootDirectory']['value'].setValue(
+            self.work_root(os.environ))  # noqa
 
 
 def imprint_container(node: Gaffer.Node,

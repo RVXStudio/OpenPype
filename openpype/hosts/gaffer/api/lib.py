@@ -105,6 +105,7 @@ def arrange(nodes: List[Gaffer.Node], parent: Optional[Gaffer.Node] = None):
     graph.getLayout().layoutNodes(graph, Gaffer.StandardSet(nodes))
 
 
+
 def traverse_scene(scene_plug: GafferScene.ScenePlug,
                    root: str = "/") -> Iterator[str]:
     """Yields breadth first all children from given `root`.
